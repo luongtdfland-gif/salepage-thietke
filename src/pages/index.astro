@@ -347,6 +347,106 @@ const formatPrice = (n: number) =>
     </div>
   </section>
 
+  <!-- FAQ Section -->
+  <section style="
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 64px 20px;
+  ">
+    <div style="text-align: center; margin-bottom: 48px;">
+      <h2 class="section-heading">Câu Hỏi Thường Gặp</h2>
+      <div class="gold-divider"></div>
+    </div>
+
+    {[
+      {
+        q: 'Hồ sơ thiết kế nhà gồm những gì?',
+        a: 'Mỗi bộ hồ sơ bao gồm bản vẽ thi công đầy đủ (PDF, sẵn sàng giao thầu), ảnh phối cảnh 3D nội thất và ngoại thất, bảng dự toán vật liệu chi tiết. Bạn nhận tất cả qua email ngay sau khi thanh toán, không cần chờ đợi.'
+      },
+      {
+        q: 'Giá một bộ hồ sơ là bao nhiêu? Có rẻ hơn thuê kiến trúc sư không?',
+        a: 'Các gói có mức giá từ 800.000 đồng đến 3.500.000 đồng tùy diện tích và phong cách. So với thuê kiến trúc sư riêng — thường từ 30 đến 80 triệu đồng và chờ 2–3 tháng — đây là lựa chọn tiết kiệm nhất để có bản vẽ chuyên nghiệp ngay lập tức.'
+      },
+      {
+        q: 'Sau khi thanh toán, bao lâu thì nhận được hồ sơ?',
+        a: 'Ngay khi thanh toán qua VietQR được xác nhận, hệ thống tự động gửi toàn bộ hồ sơ vào email của bạn — thường trong vòng 5 đến 15 phút. Không cần chờ nhân viên duyệt hay liên hệ lại.'
+      },
+      {
+        q: 'Tôi không rành kỹ thuật — liệu có dùng được hồ sơ này không?',
+        a: 'Hoàn toàn được. Hồ sơ được trình bày rõ ràng để cả gia chủ lẫn thợ xây đều hiểu, kèm chú thích tiếng Việt dễ đọc. Nếu có thắc mắc, đội hỗ trợ sẵn sàng giải đáp qua chat hoặc Zalo.'
+      },
+      {
+        q: 'Có thể chỉnh sửa thiết kế theo yêu cầu không?',
+        a: 'Có — mỗi bộ hồ sơ đi kèm hỗ trợ chỉnh sửa nhỏ miễn phí (điều chỉnh kích thước phòng, màu sắc, cửa sổ). Nếu cần thay đổi lớn hơn, đội kỹ thuật sẽ báo giá riêng trong vòng 24 giờ.'
+      },
+      {
+        q: 'Thiết kế có phù hợp với quy định xây dựng địa phương không?',
+        a: 'Bản vẽ được soạn theo tiêu chuẩn xây dựng Việt Nam hiện hành (TCVN, QCVN), phù hợp để nộp xin phép xây dựng tại hầu hết các tỉnh thành. Bạn nên kiểm tra thêm với cán bộ quản lý đô thị địa phương về các quy định đặc thù của khu vực.'
+      },
+    ].map((item, i) => (
+      <div style="
+        border-bottom: 1px solid var(--c-border);
+        padding: 20px 0;
+      ">
+        <button
+          onclick={`this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'; this.querySelector('svg').style.transform = this.nextElementSibling.style.display === 'none' ? 'rotate(0deg)' : 'rotate(180deg)'`}
+          style="
+            width: 100%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 0;
+            text-align: left;
+            font-family: 'Be Vietnam Pro', sans-serif;
+          "
+        >
+          <span style="font-size: 15px; font-weight: 600; color: var(--c-text); line-height: 1.4;">
+            {item.q}
+          </span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" stroke-width="2.5" style="flex-shrink: 0; transition: transform 0.2s ease;">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+        <div style="display: none; padding-top: 12px;">
+          <p style="font-size: 14px; color: var(--c-muted); line-height: 1.75; margin: 0;">
+            {item.a}
+          </p>
+        </div>
+      </div>
+    ))}
+  </section>
+
+  <!-- FAQ + Organization JSON-LD -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "name": "Nhà Đẹp Thiết Kế",
+        "url": "https://nhadepthietke.vn",
+        "logo": "https://nhadepthietke.vn/og-image.jpg",
+        "description": "Hồ sơ thiết kế nhà chuẩn kiến trúc sư. Mua ngay, nhận ngay qua email.",
+        "address": { "@type": "PostalAddress", "addressLocality": "Hà Nội", "addressCountry": "VN" },
+        "contactPoint": { "@type": "ContactPoint", "contactType": "customer service", "email": "lienhe@nhadepthietke.vn" }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          { "@type": "Question", "name": "Hồ sơ thiết kế nhà gồm những gì?", "acceptedAnswer": { "@type": "Answer", "text": "Mỗi bộ hồ sơ bao gồm bản vẽ thi công đầy đủ (PDF, sẵn sàng giao thầu), ảnh phối cảnh 3D nội thất và ngoại thất, bảng dự toán vật liệu chi tiết. Bạn nhận tất cả qua email ngay sau khi thanh toán." } },
+          { "@type": "Question", "name": "Giá một bộ hồ sơ là bao nhiêu? Có rẻ hơn thuê kiến trúc sư không?", "acceptedAnswer": { "@type": "Answer", "text": "Các gói có mức giá từ 800.000 đồng đến 3.500.000 đồng. So với thuê kiến trúc sư riêng — thường từ 30 đến 80 triệu đồng — đây là lựa chọn tiết kiệm nhất để có bản vẽ chuyên nghiệp ngay lập tức." } },
+          { "@type": "Question", "name": "Sau khi thanh toán, bao lâu thì nhận được hồ sơ?", "acceptedAnswer": { "@type": "Answer", "text": "Ngay khi thanh toán qua VietQR được xác nhận, hệ thống tự động gửi toàn bộ hồ sơ vào email của bạn trong vòng 5 đến 15 phút. Không cần chờ nhân viên duyệt." } },
+          { "@type": "Question", "name": "Tôi không rành kỹ thuật — liệu có dùng được hồ sơ này không?", "acceptedAnswer": { "@type": "Answer", "text": "Hoàn toàn được. Hồ sơ được trình bày rõ ràng để cả gia chủ lẫn thợ xây đều hiểu, kèm chú thích tiếng Việt dễ đọc." } },
+          { "@type": "Question", "name": "Có thể chỉnh sửa thiết kế theo yêu cầu không?", "acceptedAnswer": { "@type": "Answer", "text": "Có — mỗi bộ hồ sơ đi kèm hỗ trợ chỉnh sửa nhỏ miễn phí. Nếu cần thay đổi lớn hơn, đội kỹ thuật sẽ báo giá riêng trong vòng 24 giờ." } },
+          { "@type": "Question", "name": "Thiết kế có phù hợp với quy định xây dựng địa phương không?", "acceptedAnswer": { "@type": "Answer", "text": "Bản vẽ được soạn theo tiêu chuẩn xây dựng Việt Nam hiện hành (TCVN, QCVN), phù hợp để nộp xin phép xây dựng tại hầu hết các tỉnh thành." } }
+        ]
+      }
+    ]
+  })} />
+
   <!-- AI Advisor widget -->
   <AIAdvisor />
 
