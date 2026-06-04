@@ -54,6 +54,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://nhadepth
   <style is:global>
     @import "../styles/global.css";
   </style>
+
+  <slot name="head" />
 </head>
 <body>
   <!-- Navigation -->
@@ -180,8 +182,27 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://nhadepth
             Liên Hệ
           </h4>
           <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
-            <li style="font-size: 14px; color: #9A8E86;">Email: lienhe@nhadepthietke.vn</li>
-            <li style="font-size: 14px; color: #9A8E86;">Hotline: 0912 345 678</li>
+            <li>
+              <a href="mailto:lienhe@nhadepthietke.vn" style="font-size: 14px; color: #9A8E86; text-decoration: none; transition: color 0.15s;" onmouseover="this.style.color='var(--c-accent)'" onmouseout="this.style.color='#9A8E86'">
+                Email: lienhe@nhadepthietke.vn
+              </a>
+            </li>
+            <li>
+              <a href="https://zalo.me/0912345678" target="_blank" rel="noopener" style="
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 14px;
+                color: #9A8E86;
+                text-decoration: none;
+                transition: color 0.15s;
+              " onmouseover="this.style.color='#0068FF'" onmouseout="this.style.color='#9A8E86'">
+                <svg width="14" height="14" viewBox="0 0 48 48" fill="currentColor">
+                  <path d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm9.5 28.5c-.4.4-1 .6-1.5.6-.3 0-.6-.1-.9-.2l-5.5-2.5c-.3-.1-.5-.4-.5-.7v-9.3c0-.6.4-1 1-1s1 .4 1 1v8.7l5 2.3c.5.2.7.8.5 1.3-.1.4-.4.7-.6.8z"/>
+                </svg>
+                Zalo: 0912 345 678
+              </a>
+            </li>
             <li style="font-size: 14px; color: #9A8E86;">Thứ 2 – Thứ 7: 8:00 – 17:30</li>
           </ul>
         </div>
