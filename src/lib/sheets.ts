@@ -82,8 +82,39 @@ function rowToDesignWithFile(row: Record<string, string>): DesignWithFile {
   };
 }
 
+const DEV_SAMPLE_ROWS: Record<string, string>[] = [
+  {
+    ma_mau: 'NP-01', ten: 'Nhà Phố Hiện Đại 2 Tầng — Mặt Tiền 5m', loai: 'nha-pho',
+    dien_tich_dat: '60', so_tang: '2', so_phong_ngu: '3', phong_cach: 'hien-dai',
+    huong: 'dong-nam', chi_phi_xay_du_kien: '890000000', gia_ban_ho_so: '4500000',
+    anh_url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop',
+    mo_ta: 'Mẫu nhà phố 2 tầng thiết kế hiện đại tối giản với mặt tiền 5m. Tầng 1 gồm phòng khách liên thông bếp, 1 phòng ngủ phụ. Tầng 2 có 2 phòng ngủ chính với ban công riêng.',
+    file_url: 'https://drive.google.com/uc?id=SAMPLE_FILE_ID_01&export=download', trang_thai: 'active',
+  },
+  {
+    ma_mau: 'BT-01', ten: 'Biệt Thự Vườn Cổ Điển Pháp 3 Tầng', loai: 'biet-thu',
+    dien_tich_dat: '250', so_tang: '3', so_phong_ngu: '5', phong_cach: 'biet-thu-phap',
+    huong: 'nam', chi_phi_xay_du_kien: '4500000000', gia_ban_ho_so: '12000000',
+    anh_url: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop',
+    mo_ta: 'Biệt thự vườn 3 tầng phong cách Pháp cổ điển sang trọng, phù hợp với lô đất 200-300m².',
+    file_url: 'https://drive.google.com/uc?id=SAMPLE_FILE_ID_02&export=download', trang_thai: 'active',
+  },
+  {
+    ma_mau: 'NP-02', ten: 'Nhà Phố Tân Cổ Điển 3 Tầng — Mặt Tiền 6m', loai: 'nha-pho',
+    dien_tich_dat: '80', so_tang: '3', so_phong_ngu: '4', phong_cach: 'tan-co-dien',
+    huong: 'tay-nam', chi_phi_xay_du_kien: '1800000000', gia_ban_ho_so: '6000000',
+    anh_url: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop',
+    mo_ta: 'Nhà phố 3 tầng phong cách tân cổ điển với mặt tiền 6m. Chi tiết cornice, cột tròn và cửa sổ vòm trang trí mặt tiền.',
+    file_url: 'https://drive.google.com/uc?id=SAMPLE_FILE_ID_03&export=download', trang_thai: 'active',
+  },
+];
+
 async function fetchCSV(): Promise<Record<string, string>[]> {
   if (!CSV_URL) {
+    if (import.meta.env.DEV) {
+      console.info('[sheets] DEV mode — using sample data (set GOOGLE_SHEET_CSV_URL to use real sheet)');
+      return DEV_SAMPLE_ROWS;
+    }
     console.warn('[sheets] GOOGLE_SHEET_CSV_URL not set, returning empty dataset');
     return [];
   }
