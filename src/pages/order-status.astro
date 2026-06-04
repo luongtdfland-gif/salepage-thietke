@@ -1,0 +1,180 @@
+---
+import Layout from '../layouts/Layout.astro';
+export const prerender = false;
+---
+
+<Layout
+  title="Kiểm Tra Đơn Hàng — Nhà Đẹp Thiết Kế"
+  description="Tra cứu trạng thái đơn hàng và xác nhận giao hồ sơ thiết kế."
+>
+  <div style="
+    max-width: 600px;
+    margin: 80px auto 120px;
+    padding: 0 20px;
+  ">
+    <h1 style="
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--c-text);
+      margin: 0 0 8px;
+    ">Kiểm Tra Đơn Hàng</h1>
+    <p style="font-size: 15px; color: var(--c-muted); margin: 0 0 40px; line-height: 1.6;">
+      Nhập mã đơn hàng (Order Code) từ trang thanh toán PayOS để kiểm tra trạng thái và xác nhận email đã được gửi.
+    </p>
+
+    <form id="status-form" style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 32px;">
+      <input
+        id="order-code"
+        type="text"
+        placeholder="Ví dụ: 3847291"
+        inputmode="numeric"
+        pattern="[0-9]+"
+        required
+        style="
+          flex: 1;
+          min-width: 200px;
+          padding: 12px 16px;
+          border: 1.5px solid var(--c-border);
+          border-radius: 8px;
+          font-size: 16px;
+          font-family: 'Be Vietnam Pro', sans-serif;
+          color: var(--c-text);
+          background: var(--c-bg);
+          outline: none;
+          transition: border-color 0.15s;
+        "
+        onfocus="this.style.borderColor='var(--c-accent)'"
+        onblur="this.style.borderColor='var(--c-border)'"
+      />
+      <button
+        type="submit"
+        id="check-btn"
+        style="
+          padding: 12px 24px;
+          background: var(--c-text);
+          color: var(--c-bg);
+          border: none;
+          border-radius: 8px;
+          font-size: 15px;
+          font-weight: 600;
+          font-family: 'Be Vietnam Pro', sans-serif;
+          cursor: pointer;
+          white-space: nowrap;
+          transition: opacity 0.15s;
+        "
+      >Kiểm Tra</button>
+    </form>
+
+    <div id="result" style="display: none;"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('status-form') as HTMLFormElement;
+    const input = document.getElementById('order-code') as HTMLInputElement;
+    const result = document.getElementById('result') as HTMLDivElement;
+    const btn = document.getElementById('check-btn') as HTMLButtonElement;
+
+    const statusLabel: Record<string, { text: string; color: string }> = {
+      PAID:      { text: '✓ Đã thanh toán — Email hồ sơ đã gửi', color: '#16a34a' },
+      PENDING:   { text: '⏳ Chờ thanh toán', color: '#d97706' },
+      CANCELLED: { text: '✕ Đã huỷ', color: '#dc2626' },
+      EXPIRED:   { text: '⚠ Hết hạn', color: '#9ca3af' },
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const code = input.value.trim();
+      if (!code) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Đang kiểm tra...';
+      result.style.display = 'none';
+
+      try {
+        const res = await fetch(`/api/order-status?orderCode=${encodeURIComponent(code)}`);
+        const data = await res.json() as {
+          error?: string;
+          status?: string;
+          amount?: number;
+          description?: string;
+          buyerEmail?: string;
+          buyerName?: string;
+        };
+
+        if (!res.ok || data.error) {
+          result.innerHTML = `
+            <div style="
+              padding: 20px;
+              border-radius: 10px;
+              border: 1px solid #fca5a5;
+              background: #fef2f2;
+              color: #b91c1c;
+              font-size: 14px;
+            ">
+              <strong>Không tìm thấy đơn hàng.</strong><br/>
+              ${data.error ?? 'Vui lòng kiểm tra lại mã đơn hàng.'}
+            </div>`;
+        } else {
+          const status = data.status ?? 'UNKNOWN';
+          const badge = statusLabel[status] ?? { text: status, color: '#6b7280' };
+          const amount = data.amount
+            ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(data.amount)
+            : '—';
+
+          result.innerHTML = `
+            <div style="
+              padding: 24px;
+              border-radius: 10px;
+              border: 1px solid var(--c-border);
+              background: var(--c-surface);
+            ">
+              <p style="font-size: 17px; font-weight: 700; color: ${badge.color}; margin: 0 0 20px;">
+                ${badge.text}
+              </p>
+              <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                <tr style="border-bottom: 1px solid var(--c-border);">
+                  <td style="padding: 10px 0; color: var(--c-muted); width: 140px;">Mã đơn hàng</td>
+                  <td style="padding: 10px 0; color: var(--c-text); font-weight: 600;">${code}</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--c-border);">
+                  <td style="padding: 10px 0; color: var(--c-muted);">Mã mẫu</td>
+                  <td style="padding: 10px 0; color: var(--c-text);">${data.description ?? '—'}</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--c-border);">
+                  <td style="padding: 10px 0; color: var(--c-muted);">Số tiền</td>
+                  <td style="padding: 10px 0; color: var(--c-text);">${amount}</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--c-border);">
+                  <td style="padding: 10px 0; color: var(--c-muted);">Khách hàng</td>
+                  <td style="padding: 10px 0; color: var(--c-text);">${data.buyerName ?? '—'}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0; color: var(--c-muted);">Email nhận hồ sơ</td>
+                  <td style="padding: 10px 0; color: var(--c-text);">${data.buyerEmail ?? '—'}</td>
+                </tr>
+              </table>
+              ${status !== 'PAID' ? `
+              <p style="margin: 20px 0 0; font-size: 13px; color: var(--c-muted);">
+                Hồ sơ chỉ được gửi sau khi thanh toán hoàn tất.
+              </p>` : ''}
+            </div>`;
+        }
+      } catch {
+        result.innerHTML = `
+          <div style="
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #fca5a5;
+            background: #fef2f2;
+            color: #b91c1c;
+            font-size: 14px;
+          ">Lỗi kết nối — vui lòng thử lại sau.</div>`;
+      }
+
+      result.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Kiểm Tra';
+    });
+  </script>
+</Layout>

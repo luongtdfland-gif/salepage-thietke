@@ -60,6 +60,25 @@ const paymentStatus = Astro.url.searchParams.get('payment');
   description={`${design.ten}: ${design.mo_ta.substring(0, 150)}... Giá hồ sơ: ${formatPrice(design.gia_ban_ho_so)}`}
   ogImage={design.anh_url}
 >
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": design.ten,
+    "description": design.mo_ta,
+    "image": design.anh_url,
+    "sku": design.ma_mau,
+    "category": loaiLabel,
+    "offers": {
+      "@type": "Offer",
+      "price": design.gia_ban_ho_so,
+      "priceCurrency": "VND",
+      "availability": "https://schema.org/InStock",
+      "seller": {
+        "@type": "Organization",
+        "name": "Nhà Đẹp Thiết Kế"
+      }
+    }
+  })} />
   <!-- Payment status notification -->
   {paymentStatus === 'success' && (
     <div id="payment-notification" style="

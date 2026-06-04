@@ -95,6 +95,53 @@ export async function createPayOSPayment(
 }
 
 /**
+ * Fetch PayOS order status by orderCode.
+ */
+export async function getPayOSOrderStatus(orderCode: string | number): Promise<{
+  status: 'PAID' | 'PENDING' | 'CANCELLED' | 'EXPIRED' | string;
+  amount: number;
+  description: string;
+  buyerEmail: string;
+  buyerName: string;
+  orderCode: number;
+}> {
+  const clientId = getEnv('PAYOS_CLIENT_ID');
+  const apiKey = getEnv('PAYOS_API_KEY');
+
+  const res = await fetch(`${PAYOS_BASE_URL}/${orderCode}`, {
+    method: 'GET',
+    headers: {
+      'x-client-id': clientId,
+      'x-api-key': apiKey,
+    },
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`PayOS API error ${res.status}: ${errorText}`);
+  }
+
+  const json = await res.json() as {
+    code: string;
+    desc: string;
+    data?: {
+      status: string;
+      amount: number;
+      description: string;
+      buyerEmail: string;
+      buyerName: string;
+      orderCode: number;
+    };
+  };
+
+  if (json.code !== '00' || !json.data) {
+    throw new Error(`PayOS error: ${json.desc} (code: ${json.code})`);
+  }
+
+  return json.data;
+}
+
+/**
  * Verify a PayOS webhook signature.
  * PayOS signs the webhook data object fields in alphabetical order.
  */

@@ -56,6 +56,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://nhadepth
   </style>
 
   <slot name="head" />
+
+  <!-- Vercel Web Analytics (enable in Vercel dashboard → Analytics) -->
+  <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
   <!-- Navigation -->
@@ -236,5 +239,18 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://nhadepth
       }
     }
   </style>
+
+  <script>
+    // Persist UTM params to sessionStorage so they survive navigations within the session.
+    // Vercel Analytics picks these up automatically on page views.
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+      utmKeys.forEach(key => {
+        const val = params.get(key);
+        if (val) sessionStorage.setItem(key, val);
+      });
+    })();
+  </script>
 </body>
 </html>
