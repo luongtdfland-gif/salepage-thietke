@@ -1,0 +1,219 @@
+---
+export interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  ogType?: string;
+}
+
+const {
+  title = 'Nhà Đẹp Thiết Kế — Hồ Sơ Thiết Kế Nhà Chuẩn Kiến Trúc Sư',
+  description = 'Mua hồ sơ thiết kế nhà đẹp chuẩn kiến trúc sư. Đa dạng mẫu nhà phố, biệt thự, nhà vườn. Mua ngay, nhận ngay qua email.',
+  ogImage = '/og-image.jpg',
+  ogType = 'website',
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://nhadepthietke.vn');
+---
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1A1715" />
+  <link rel="canonical" href={canonicalURL} />
+
+  <title>{title}</title>
+  <meta name="description" content={description} />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content={ogType} />
+  <meta property="og:url" content={canonicalURL} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:locale" content="vi_VN" />
+  <meta property="og:site_name" content="Nhà Đẹp Thiết Kế" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Global styles -->
+  <link rel="stylesheet" href="/src/styles/global.css" />
+  <style is:global>
+    @import "../styles/global.css";
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <header class="nav-header" style="
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(250, 248, 244, 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--c-border);
+  ">
+    <div style="
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    ">
+      <!-- Logo -->
+      <a href="/" style="text-decoration: none; display: flex; flex-direction: column; gap: 2px;">
+        <span style="
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 20px;
+          font-weight: 700;
+          color: var(--c-text);
+          letter-spacing: 0.5px;
+          line-height: 1;
+        ">Nhà Đẹp Thiết Kế</span>
+        <span style="
+          font-size: 10px;
+          font-weight: 500;
+          color: var(--c-accent);
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          line-height: 1;
+        ">Kiến Trúc Hà Nội</span>
+      </a>
+
+      <!-- Nav links -->
+      <nav style="display: flex; align-items: center; gap: 8px;">
+        <a href="/#thiet-ke" style="
+          font-size: 14px;
+          font-weight: 500;
+          color: var(--c-muted);
+          text-decoration: none;
+          padding: 8px 14px;
+          border-radius: 6px;
+          transition: color 0.15s ease, background 0.15s ease;
+        " onmouseover="this.style.color='var(--c-text)';this.style.background='var(--c-surface)'"
+           onmouseout="this.style.color='var(--c-muted)';this.style.background='transparent'">
+          Mẫu Thiết Kế
+        </a>
+        <a href="#tu-van" style="
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--c-accent-dark);
+          text-decoration: none;
+          padding: 8px 18px;
+          border-radius: 6px;
+          border: 1.5px solid var(--c-accent);
+          transition: all 0.15s ease;
+        " onmouseover="this.style.background='var(--c-accent)';this.style.color='white'"
+           onmouseout="this.style.background='transparent';this.style.color='var(--c-accent-dark)'">
+          Tư Vấn AI
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main>
+    <slot />
+  </main>
+
+  <!-- Footer -->
+  <footer style="
+    background: var(--c-text);
+    color: var(--c-surface);
+    padding: 48px 20px;
+    margin-top: 80px;
+  ">
+    <div style="max-width: 1200px; margin: 0 auto;">
+      <div style="
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 32px;
+        margin-bottom: 40px;
+      " class="footer-grid">
+        <!-- Brand -->
+        <div>
+          <h3 style="
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--c-accent);
+            margin: 0 0 8px;
+          ">Nhà Đẹp Thiết Kế</h3>
+          <p style="font-size: 11px; color: var(--c-muted); letter-spacing: 2px; text-transform: uppercase; margin: 0 0 16px;">
+            Kiến Trúc Hà Nội
+          </p>
+          <p style="font-size: 14px; color: #9A8E86; line-height: 1.7; margin: 0; max-width: 300px;">
+            Hồ sơ thiết kế nhà chuẩn kiến trúc sư. Mua ngay, nhận ngay. Bảo hành chỉnh sửa trọn đời.
+          </p>
+        </div>
+
+        <!-- Links -->
+        <div>
+          <h4 style="font-size: 13px; font-weight: 600; color: var(--c-surface); margin: 0 0 16px; text-transform: uppercase; letter-spacing: 1px;">
+            Danh Mục
+          </h4>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+            <li><a href="/?loai=nha-pho" style="font-size: 14px; color: #9A8E86; text-decoration: none; transition: color 0.15s;" onmouseover="this.style.color='var(--c-accent)'" onmouseout="this.style.color='#9A8E86'">Nhà Phố</a></li>
+            <li><a href="/?loai=biet-thu" style="font-size: 14px; color: #9A8E86; text-decoration: none; transition: color 0.15s;" onmouseover="this.style.color='var(--c-accent)'" onmouseout="this.style.color='#9A8E86'">Biệt Thự</a></li>
+            <li><a href="/?loai=nha-vuon" style="font-size: 14px; color: #9A8E86; text-decoration: none; transition: color 0.15s;" onmouseover="this.style.color='var(--c-accent)'" onmouseout="this.style.color='#9A8E86'">Nhà Vườn</a></li>
+            <li><a href="/?loai=chung-cu" style="font-size: 14px; color: #9A8E86; text-decoration: none; transition: color 0.15s;" onmouseover="this.style.color='var(--c-accent)'" onmouseout="this.style.color='#9A8E86'">Chung Cư</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact -->
+        <div>
+          <h4 style="font-size: 13px; font-weight: 600; color: var(--c-surface); margin: 0 0 16px; text-transform: uppercase; letter-spacing: 1px;">
+            Liên Hệ
+          </h4>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+            <li style="font-size: 14px; color: #9A8E86;">Email: lienhe@nhadepthietke.vn</li>
+            <li style="font-size: 14px; color: #9A8E86;">Hotline: 0912 345 678</li>
+            <li style="font-size: 14px; color: #9A8E86;">Thứ 2 – Thứ 7: 8:00 – 17:30</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Bottom bar -->
+      <div style="
+        border-top: 1px solid rgba(255,255,255,0.08);
+        padding-top: 24px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+      ">
+        <p style="font-size: 12px; color: #6B605A; margin: 0;">
+          © 2026 Nhà Đẹp Thiết Kế. Bản quyền đã được bảo hộ.
+        </p>
+        <div style="display: flex; gap: 20px;">
+          <a href="/dieu-khoan" style="font-size: 12px; color: #6B605A; text-decoration: none;">Điều Khoản Dịch Vụ</a>
+          <a href="/chinh-sach" style="font-size: 12px; color: #6B605A; text-decoration: none;">Chính Sách Bảo Mật</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <style>
+    @media (min-width: 768px) {
+      .footer-grid {
+        grid-template-columns: 2fr 1fr 1fr !important;
+      }
+    }
+  </style>
+</body>
+</html>

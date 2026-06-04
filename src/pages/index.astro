@@ -1,0 +1,359 @@
+---
+import Layout from '../layouts/Layout.astro';
+import DesignCard from '../components/DesignCard.astro';
+import FilterBar from '../components/FilterBar.astro';
+import AIAdvisor from '../components/AIAdvisor.astro';
+import { fetchDesigns } from '../lib/sheets';
+
+const designs = await fetchDesigns();
+
+const totalDesigns = designs.length;
+const minPrice = designs.length > 0
+  ? Math.min(...designs.map(d => d.gia_ban_ho_so))
+  : 0;
+const maxPrice = designs.length > 0
+  ? Math.max(...designs.map(d => d.gia_ban_ho_so))
+  : 0;
+
+const formatPrice = (n: number) =>
+  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(n);
+---
+
+<Layout
+  title="Nhà Đẹp Thiết Kế — Hồ Sơ Thiết Kế Nhà Chuẩn Kiến Trúc Sư"
+  description={`${totalDesigns}+ mẫu thiết kế nhà phố, biệt thự, nhà vườn. Hồ sơ chuẩn kiến trúc sư từ ${formatPrice(minPrice)}. Mua ngay, nhận ngay qua email.`}
+>
+  <!-- Hero Section -->
+  <section style="
+    position: relative;
+    min-height: 92vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--c-text);
+  ">
+    <!-- Background gradient overlay -->
+    <div style="
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(26, 23, 21, 0.96) 0%,
+        rgba(26, 23, 21, 0.85) 40%,
+        rgba(196, 154, 46, 0.15) 100%
+      );
+      z-index: 2;
+    "></div>
+
+    <!-- Decorative pattern -->
+    <div style="
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle at 20% 50%, rgba(196, 154, 46, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(196, 154, 46, 0.06) 0%, transparent 40%);
+      z-index: 1;
+    "></div>
+
+    <!-- Hero content -->
+    <div style="
+      position: relative;
+      z-index: 3;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 60px 24px;
+      text-align: center;
+    ">
+      <!-- Tag line -->
+      <div style="
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(196, 154, 46, 0.15);
+        border: 1px solid rgba(196, 154, 46, 0.3);
+        padding: 6px 16px;
+        border-radius: 24px;
+        margin-bottom: 24px;
+      ">
+        <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--c-accent);"></div>
+        <span style="font-size: 12px; color: var(--c-accent); font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">
+          Kiến Trúc Hà Nội · {totalDesigns} Mẫu Thiết Kế
+        </span>
+      </div>
+
+      <!-- Headline -->
+      <h1 style="
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(34px, 6vw, 60px);
+        font-weight: 700;
+        color: #FFFFFF;
+        margin: 0 0 20px;
+        line-height: 1.15;
+        letter-spacing: -0.5px;
+      ">
+        Hồ Sơ Thiết Kế Nhà<br/>
+        <span style="color: var(--c-accent);">Chuẩn Kiến Trúc Sư</span>
+      </h1>
+
+      <!-- Subheadline -->
+      <p style="
+        font-size: clamp(15px, 2.5vw, 18px);
+        color: rgba(255, 255, 255, 0.72);
+        margin: 0 0 12px;
+        line-height: 1.65;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      ">
+        Mua hồ sơ thiết kế nhà đẹp — nhận ngay qua email trong vài phút.
+        Bản vẽ kiến trúc đầy đủ, phối cảnh 3D, bảng dự toán chi tiết.
+      </p>
+      <p style="
+        font-size: 14px;
+        color: var(--c-accent);
+        font-weight: 600;
+        margin: 0 0 36px;
+      ">
+        Từ {formatPrice(minPrice)} đến {formatPrice(maxPrice)}
+      </p>
+
+      <!-- CTAs -->
+      <div style="
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        flex-wrap: wrap;
+      ">
+        <a href="#thiet-ke" class="btn-primary" style="font-size: 15px; padding: 14px 32px;">
+          Xem Mẫu Thiết Kế
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </a>
+        <button
+          onclick="document.getElementById('chat-toggle').click()"
+          style="
+            background: transparent;
+            border: 1.5px solid rgba(255,255,255,0.3);
+            color: white;
+            font-family: 'Be Vietnam Pro', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            padding: 14px 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+          "
+          onmouseover="this.style.background='rgba(255,255,255,0.08)';this.style.borderColor='rgba(255,255,255,0.6)'"
+          onmouseout="this.style.background='transparent';this.style.borderColor='rgba(255,255,255,0.3)'"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          AI Tư Vấn Miễn Phí
+        </button>
+      </div>
+
+      <!-- Trust signals -->
+      <div style="
+        display: flex;
+        gap: 32px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 48px;
+        padding-top: 36px;
+        border-top: 1px solid rgba(255,255,255,0.1);
+      ">
+        <div style="text-align: center;">
+          <div style="font-size: 28px; font-weight: 700; color: var(--c-accent); font-family: 'Cormorant Garamond', serif;">500+</div>
+          <div style="font-size: 12px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;">Gia Đình Tin Dùng</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-size: 28px; font-weight: 700; color: var(--c-accent); font-family: 'Cormorant Garamond', serif;">{totalDesigns}+</div>
+          <div style="font-size: 12px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;">Mẫu Thiết Kế</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-size: 28px; font-weight: 700; color: var(--c-accent); font-family: 'Cormorant Garamond', serif;">10+</div>
+          <div style="font-size: 12px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;">Năm Kinh Nghiệm</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-size: 28px; font-weight: 700; color: var(--c-accent); font-family: 'Cormorant Garamond', serif;">4.9★</div>
+          <div style="font-size: 12px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;">Đánh Giá Trung Bình</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div style="
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      animation: scroll-bounce 2s ease-in-out infinite;
+    ">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- How it works section -->
+  <section style="
+    background: var(--c-surface);
+    padding: 60px 20px;
+    border-bottom: 1px solid var(--c-border);
+  ">
+    <div style="max-width: 960px; margin: 0 auto; text-align: center;">
+      <h2 class="section-heading">Quy Trình Đơn Giản</h2>
+      <div class="gold-divider" style="margin-bottom: 40px;"></div>
+      <div style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 32px;
+      ">
+        {[
+          { num: '01', title: 'Chọn Mẫu', desc: 'Duyệt qua các mẫu thiết kế hoặc nhờ AI tư vấn mẫu phù hợp nhất' },
+          { num: '02', title: 'Thanh Toán', desc: 'Quét mã VietQR hoặc thanh toán online qua PayOS — an toàn, tức thời' },
+          { num: '03', title: 'Nhận Hồ Sơ', desc: 'Hồ sơ thiết kế đầy đủ gửi ngay vào email của bạn trong vài phút' },
+        ].map(step => (
+          <div style="text-align: center;">
+            <div style="
+              width: 56px;
+              height: 56px;
+              border-radius: 50%;
+              background: var(--c-text);
+              color: var(--c-accent);
+              font-family: 'Cormorant Garamond', serif;
+              font-size: 20px;
+              font-weight: 700;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin: 0 auto 16px;
+            ">{step.num}</div>
+            <h3 style="
+              font-family: 'Cormorant Garamond', serif;
+              font-size: 18px;
+              font-weight: 700;
+              margin: 0 0 8px;
+            ">{step.title}</h3>
+            <p style="font-size: 14px; color: var(--c-muted); line-height: 1.6; margin: 0;">
+              {step.desc}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Design grid section -->
+  <section id="thiet-ke" style="
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 64px 20px;
+  ">
+    <div style="text-align: center; margin-bottom: 40px;">
+      <h2 class="section-heading">Danh Mục Mẫu Thiết Kế</h2>
+      <div class="gold-divider"></div>
+      <p class="section-subheading" style="margin-top: 16px;">
+        {totalDesigns} mẫu thiết kế đa dạng phong cách — nhà phố, biệt thự, nhà vườn
+      </p>
+    </div>
+
+    <FilterBar />
+
+    {designs.length === 0 ? (
+      <div style="
+        text-align: center;
+        padding: 80px 20px;
+        color: var(--c-muted);
+      ">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 16px; display: block; opacity: 0.4;">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        <p style="font-size: 16px; margin: 0 0 8px;">Chưa có mẫu thiết kế nào</p>
+        <p style="font-size: 14px; margin: 0;">Vui lòng thêm dữ liệu vào Google Sheet và kích hoạt cột trang_thai = active</p>
+      </div>
+    ) : (
+      <div style="
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 24px;
+        margin-top: 24px;
+      ">
+        {designs.map(design => (
+          <div class="card-wrapper">
+            <DesignCard design={design} />
+          </div>
+        ))}
+      </div>
+    )}
+  </section>
+
+  <!-- Testimonials section -->
+  <section style="
+    background: var(--c-text);
+    padding: 64px 20px;
+    margin: 0;
+  ">
+    <div style="max-width: 960px; margin: 0 auto; text-align: center;">
+      <h2 style="
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(28px, 5vw, 40px);
+        font-weight: 700;
+        color: white;
+        margin: 0 0 12px;
+      ">Khách Hàng Nói Gì</h2>
+      <div style="width: 48px; height: 2px; background: var(--c-accent); margin: 0 auto 40px;"></div>
+      <div style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 20px;
+      ">
+        {[
+          { name: 'Chị Lan Anh', location: 'Hà Nội', text: 'Mua hồ sơ mẫu NP-01, nhận ngay trong 5 phút. Bản vẽ rất chi tiết, thợ xây hiểu ngay. Tiết kiệm được nhiều so với thuê kiến trúc sư riêng.', stars: 5 },
+          { name: 'Anh Minh Tuấn', location: 'TP.HCM', text: 'AI tư vấn gợi ý mẫu biệt thự BT-02 rất phù hợp với đất 250m² của mình. Hồ sơ đầy đủ từ A-Z, không cần chỉnh sửa nhiều.', stars: 5 },
+          { name: 'Anh Đức Thắng', location: 'Đà Nẵng', text: 'Giá cả rất hợp lý so với chất lượng. 3D đẹp, bản vẽ kỹ thuật đầy đủ. Sẽ quay lại khi cần xây thêm công trình.', stars: 5 },
+        ].map(t => (
+          <div style="
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: left;
+          ">
+            <div style="display: flex; gap: 2px; margin-bottom: 16px;">
+              {Array(t.stars).fill(0).map(() => (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--c-accent)" stroke="none">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+              ))}
+            </div>
+            <p style="font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.7; margin: 0 0 16px;">
+              "{t.text}"
+            </p>
+            <div>
+              <div style="font-size: 14px; font-weight: 600; color: white;">{t.name}</div>
+              <div style="font-size: 12px; color: rgba(255,255,255,0.4);">{t.location}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Advisor widget -->
+  <AIAdvisor />
+
+  <style>
+    @keyframes scroll-bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+  </style>
+</Layout>

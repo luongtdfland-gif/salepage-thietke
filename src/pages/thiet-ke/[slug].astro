@@ -1,0 +1,331 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AIAdvisor from '../../components/AIAdvisor.astro';
+import PaymentModal from '../../components/PaymentModal.astro';
+import { fetchDesign } from '../../lib/sheets';
+
+const { slug } = Astro.params;
+const design = await fetchDesign(slug ?? '');
+
+if (!design) {
+  return Astro.redirect('/?not_found=1');
+}
+
+const loaiLabels: Record<string, string> = {
+  'nha-pho': 'Nhà Phố',
+  'biet-thu': 'Biệt Thự',
+  'chung-cu': 'Chung Cư',
+  'nha-vuon': 'Nhà Vườn',
+};
+
+const phongCachLabels: Record<string, string> = {
+  'hien-dai': 'Hiện Đại',
+  'co-dien': 'Cổ Điển',
+  'biet-thu-phap': 'Biệt Thự Pháp',
+  'tan-co-dien': 'Tân Cổ Điển',
+  'dia-trung-hai': 'Địa Trung Hải',
+  'nhat-ban': 'Nhật Bản',
+  'bac-au': 'Bắc Âu',
+};
+
+const huongLabels: Record<string, string> = {
+  'dong': 'Hướng Đông',
+  'tay': 'Hướng Tây',
+  'nam': 'Hướng Nam',
+  'bac': 'Hướng Bắc',
+  'dong-nam': 'Hướng Đông Nam',
+  'tay-nam': 'Hướng Tây Nam',
+  'dong-bac': 'Hướng Đông Bắc',
+  'tay-bac': 'Hướng Tây Bắc',
+};
+
+const formatPrice = (n: number) =>
+  new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+    maximumFractionDigits: 0,
+  }).format(n);
+
+const loaiLabel = loaiLabels[design.loai] ?? design.loai;
+const phongCachLabel = phongCachLabels[design.phong_cach] ?? design.phong_cach;
+const huongLabel = huongLabels[design.huong] ?? design.huong;
+const imageUrl = design.anh_url || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&h=800&fit=crop';
+
+// Check for payment status in URL
+const paymentStatus = Astro.url.searchParams.get('payment');
+---
+
+<Layout
+  title={`${design.ten} — Hồ Sơ Thiết Kế ${loaiLabel} ${design.dien_tich_dat}m²`}
+  description={`${design.ten}: ${design.mo_ta.substring(0, 150)}... Giá hồ sơ: ${formatPrice(design.gia_ban_ho_so)}`}
+  ogImage={design.anh_url}
+>
+  <!-- Payment status notification -->
+  {paymentStatus === 'success' && (
+    <div id="payment-notification" style="
+      background: #F0FDF4;
+      border-bottom: 2px solid #16A34A;
+      padding: 14px 20px;
+      text-align: center;
+      font-size: 14px;
+      color: #15803D;
+      font-weight: 500;
+    ">
+      Thanh toán thành công! Kiểm tra email của bạn để nhận hồ sơ thiết kế.
+      <button
+        onclick="document.getElementById('payment-notification').style.display='none'"
+        style="margin-left: 12px; background: none; border: none; cursor: pointer; color: #16A34A; font-size: 16px;"
+      >×</button>
+    </div>
+  )}
+
+  {paymentStatus === 'cancelled' && (
+    <div style="
+      background: #FFF7ED;
+      border-bottom: 2px solid #F59E0B;
+      padding: 14px 20px;
+      text-align: center;
+      font-size: 14px;
+      color: #92400E;
+    ">
+      Thanh toán đã bị hủy. Bạn có thể thử lại bất cứ lúc nào.
+    </div>
+  )}
+
+  <!-- Back navigation -->
+  <div style="
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 20px 0;
+  ">
+    <a href="/#thiet-ke" style="
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--c-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    " onmouseover="this.style.color='var(--c-text)'" onmouseout="this.style.color='var(--c-muted)'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 5l-7 7 7 7"/>
+      </svg>
+      Quay về danh sách
+    </a>
+  </div>
+
+  <!-- Main content -->
+  <article style="
+    max-width: 1100px;
+    margin: 20px auto 0;
+    padding: 0 20px;
+  ">
+    <div style="
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 40px;
+    " class="detail-grid">
+
+      <!-- Left: Image + gallery placeholder -->
+      <div>
+        <!-- Main image -->
+        <div style="
+          border-radius: 16px;
+          overflow: hidden;
+          aspect-ratio: 16/10;
+          background: var(--c-surface);
+          margin-bottom: 12px;
+        ">
+          <img
+            src={imageUrl}
+            alt={`Hình ảnh ${design.ten}`}
+            width="1200"
+            height="750"
+            loading="eager"
+            decoding="async"
+            style="width: 100%; height: 100%; object-fit: cover;"
+          />
+        </div>
+
+        <!-- Design code badge -->
+        <div style="
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px 16px;
+          background: var(--c-surface);
+          border-radius: 8px;
+        ">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" stroke-width="2">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+            <line x1="7" y1="7" x2="7.01" y2="7"/>
+          </svg>
+          <span style="font-size: 13px; color: var(--c-muted);">Mã mẫu:</span>
+          <span style="font-size: 13px; font-weight: 600; color: var(--c-text); font-family: monospace;">{design.ma_mau}</span>
+        </div>
+      </div>
+
+      <!-- Right: Details + purchase -->
+      <div>
+        <!-- Badges -->
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+          <span class="badge badge-accent" style="font-size: 12px;">{loaiLabel}</span>
+          <span class="badge" style="font-size: 12px;">{phongCachLabel}</span>
+          <span class="badge" style="font-size: 12px;">{huongLabel}</span>
+        </div>
+
+        <!-- Title -->
+        <h1 style="
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(26px, 4vw, 36px);
+          font-weight: 700;
+          margin: 0 0 20px;
+          line-height: 1.25;
+          color: var(--c-text);
+        ">{design.ten}</h1>
+
+        <!-- Key specs grid -->
+        <div style="
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
+          margin-bottom: 24px;
+        ">
+          {[
+            { label: 'Diện Tích Đất', value: `${design.dien_tich_dat} m²`, icon: 'M3 3h18v18H3zM3 9h18M9 3v18' },
+            { label: 'Số Tầng', value: `${design.so_tang} tầng`, icon: 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z' },
+            { label: 'Phòng Ngủ', value: `${design.so_phong_ngu} phòng`, icon: 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z' },
+            { label: 'Phong Cách', value: phongCachLabel, icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z' },
+          ].map(spec => (
+            <div style="
+              background: var(--c-surface);
+              border-radius: 10px;
+              padding: 14px 16px;
+              display: flex;
+              flex-direction: column;
+              gap: 4px;
+            ">
+              <span style="font-size: 11px; color: var(--c-muted); text-transform: uppercase; letter-spacing: 0.8px;">{spec.label}</span>
+              <span style="font-size: 16px; font-weight: 700; color: var(--c-text); font-family: 'Cormorant Garamond', serif;">{spec.value}</span>
+            </div>
+          ))}
+        </div>
+
+        <!-- Construction cost -->
+        <div style="
+          background: var(--c-surface);
+          border-radius: 10px;
+          padding: 14px 16px;
+          margin-bottom: 24px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        ">
+          <div>
+            <div style="font-size: 11px; color: var(--c-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px;">
+              Chi Phí Xây Dự Kiến
+            </div>
+            <div style="font-size: 18px; font-weight: 700; color: var(--c-text); font-family: 'Cormorant Garamond', serif;">
+              {formatPrice(design.chi_phi_xay_du_kien)}
+            </div>
+          </div>
+          <div style="font-size: 11px; color: var(--c-muted); text-align: right; max-width: 120px; line-height: 1.4;">
+            Dự toán tham khảo, không bao gồm đất
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div style="margin-bottom: 28px;">
+          <h2 style="font-size: 14px; font-weight: 600; color: var(--c-muted); text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px;">
+            Mô Tả
+          </h2>
+          <p style="font-size: 15px; color: var(--c-text); line-height: 1.75; margin: 0;">
+            {design.mo_ta}
+          </p>
+        </div>
+
+        <!-- Price + CTA -->
+        <div style="
+          background: var(--c-text);
+          border-radius: 14px;
+          padding: 24px;
+          color: white;
+        ">
+          <div style="
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 6px;
+          ">
+            <span style="font-size: 13px; color: rgba(255,255,255,0.5);">Giá hồ sơ thiết kế</span>
+          </div>
+          <div style="
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--c-accent);
+            margin-bottom: 20px;
+          ">{formatPrice(design.gia_ban_ho_so)}</div>
+
+          <!-- What's included quick list -->
+          <ul style="list-style: none; padding: 0; margin: 0 0 20px; display: flex; flex-direction: column; gap: 8px;">
+            {['Bản vẽ kiến trúc đầy đủ (PDF)', 'Phối cảnh 3D nội & ngoại thất', 'Bảng dự toán vật liệu', 'Hỗ trợ chỉnh sửa nhỏ miễn phí'].map(item => (
+              <li style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(255,255,255,0.75);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                {item}
+              </li>
+            ))}
+          </ul>
+
+          <!-- Buy button -->
+          <button
+            id="buy-btn"
+            class="btn-primary"
+            style="width: 100%; justify-content: center; font-size: 16px; padding: 16px;"
+            data-ma-mau={design.ma_mau}
+            data-design-name={design.ten}
+            data-price={design.gia_ban_ho_so}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+            Mua Hồ Sơ Ngay
+          </button>
+
+          <p style="text-align: center; font-size: 11px; color: rgba(255,255,255,0.35); margin: 12px 0 0;">
+            Thanh toán qua VietQR · Nhận hồ sơ ngay qua email
+          </p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Payment Modal -->
+  <PaymentModal />
+
+  <!-- AI Advisor -->
+  <AIAdvisor />
+
+  <style>
+    @media (min-width: 900px) {
+      .detail-grid {
+        grid-template-columns: 1.2fr 1fr !important;
+      }
+    }
+  </style>
+
+  <script>
+    const buyBtn = document.getElementById('buy-btn');
+    if (buyBtn) {
+      buyBtn.addEventListener('click', () => {
+        const maMau = buyBtn.dataset.maMau ?? '';
+        const designName = buyBtn.dataset.designName ?? '';
+        const price = parseInt(buyBtn.dataset.price ?? '0', 10);
+        const openFn = (window as unknown as Record<string, (a: string, b: string, c: number) => void>).openPaymentModal;
+        if (typeof openFn === 'function') openFn(maMau, designName, price);
+      });
+    }
+  </script>
+</Layout>

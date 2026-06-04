@@ -1,0 +1,142 @@
+---
+// FilterBar renders filter pills and handles client-side filtering via data attributes
+---
+
+<section id="filter-bar" style="
+  background: var(--c-white);
+  border-top: 1px solid var(--c-border);
+  border-bottom: 1px solid var(--c-border);
+  padding: 20px;
+  position: sticky;
+  top: 64px;
+  z-index: 40;
+">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <!-- Filter groups -->
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+
+      <!-- Loại nhà -->
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <span style="font-size: 12px; font-weight: 600; color: var(--c-muted); text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; min-width: 72px;">
+          Loại nhà
+        </span>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="filter-loai">
+          <button class="filter-pill active" data-filter="loai" data-value="all">Tất cả</button>
+          <button class="filter-pill" data-filter="loai" data-value="nha-pho">Nhà Phố</button>
+          <button class="filter-pill" data-filter="loai" data-value="biet-thu">Biệt Thự</button>
+          <button class="filter-pill" data-filter="loai" data-value="nha-vuon">Nhà Vườn</button>
+          <button class="filter-pill" data-filter="loai" data-value="chung-cu">Chung Cư</button>
+        </div>
+      </div>
+
+      <!-- Số tầng -->
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <span style="font-size: 12px; font-weight: 600; color: var(--c-muted); text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; min-width: 72px;">
+          Số tầng
+        </span>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="filter-tang">
+          <button class="filter-pill active" data-filter="tang" data-value="all">Tất cả</button>
+          <button class="filter-pill" data-filter="tang" data-value="1">1 tầng</button>
+          <button class="filter-pill" data-filter="tang" data-value="2">2 tầng</button>
+          <button class="filter-pill" data-filter="tang" data-value="3">3 tầng</button>
+          <button class="filter-pill" data-filter="tang" data-value="4+">4 tầng+</button>
+        </div>
+      </div>
+
+      <!-- Phong cách -->
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <span style="font-size: 12px; font-weight: 600; color: var(--c-muted); text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; min-width: 72px;">
+          Phong cách
+        </span>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="filter-phong-cach">
+          <button class="filter-pill active" data-filter="phong-cach" data-value="all">Tất cả</button>
+          <button class="filter-pill" data-filter="phong-cach" data-value="hien-dai">Hiện Đại</button>
+          <button class="filter-pill" data-filter="phong-cach" data-value="co-dien">Cổ Điển</button>
+          <button class="filter-pill" data-filter="phong-cach" data-value="tan-co-dien">Tân Cổ Điển</button>
+          <button class="filter-pill" data-filter="phong-cach" data-value="biet-thu-phap">Biệt Thự Pháp</button>
+          <button class="filter-pill" data-filter="phong-cach" data-value="bac-au">Bắc Âu</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Result count -->
+    <div style="margin-top: 12px; display: flex; justify-content: flex-end;">
+      <span id="filter-count" style="font-size: 13px; color: var(--c-muted);"></span>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Active filter state
+  const filters: Record<string, string> = {
+    loai: 'all',
+    tang: 'all',
+    'phong-cach': 'all',
+  };
+
+  function applyFilters() {
+    const cards = document.querySelectorAll<HTMLElement>('.design-card');
+    let visible = 0;
+
+    cards.forEach(card => {
+      const cardLoai = card.dataset.loai ?? '';
+      const cardTang = card.dataset.tang ?? '';
+      const cardPhongCach = card.dataset.phongCach ?? '';
+
+      const matchLoai = filters.loai === 'all' || cardLoai === filters.loai;
+
+      let matchTang = false;
+      if (filters.tang === 'all') {
+        matchTang = true;
+      } else if (filters.tang === '4+') {
+        matchTang = parseInt(cardTang, 10) >= 4;
+      } else {
+        matchTang = cardTang === filters.tang;
+      }
+
+      const matchPhongCach = filters['phong-cach'] === 'all' || cardPhongCach === filters['phong-cach'];
+
+      const show = matchLoai && matchTang && matchPhongCach;
+      const wrapper = card.closest<HTMLElement>('.card-wrapper') ?? card;
+      wrapper.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+
+    const countEl = document.getElementById('filter-count');
+    if (countEl) {
+      countEl.textContent = `Hiển thị ${visible} mẫu thiết kế`;
+    }
+  }
+
+  function initFilters() {
+    const pillButtons = document.querySelectorAll<HTMLButtonElement>('.filter-pill[data-filter]');
+
+    pillButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const filterType = btn.dataset.filter!;
+        const value = btn.dataset.value!;
+
+        // Update active state within the group
+        const group = document.querySelectorAll<HTMLButtonElement>(
+          `.filter-pill[data-filter="${filterType}"]`
+        );
+        group.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        filters[filterType] = value;
+        applyFilters();
+      });
+    });
+
+    // Initial count
+    applyFilters();
+  }
+
+  // Run on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFilters);
+  } else {
+    initFilters();
+  }
+</script>

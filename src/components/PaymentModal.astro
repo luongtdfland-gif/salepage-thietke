@@ -1,0 +1,417 @@
+---
+// PaymentModal — opens when user clicks "Mua Hồ Sơ"
+// Props passed via JS data attributes
+---
+
+<div id="payment-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Thanh toán" aria-hidden="true">
+  <div class="modal-box" onclick="(arguments[0]||event).stopPropagation()">
+    <!-- Close button -->
+    <button
+      id="modal-close"
+      aria-label="Đóng"
+      style="
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 6px;
+        color: var(--c-muted);
+        border-radius: 6px;
+        transition: color 0.15s ease;
+      "
+      onmouseover="this.style.color='var(--c-text)'"
+      onmouseout="this.style.color='var(--c-muted)'"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+
+    <!-- Step 1: Order form -->
+    <div id="step-form">
+      <div style="margin-bottom: 24px;">
+        <p style="font-size: 12px; color: var(--c-accent); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin: 0 0 6px;">
+          Đặt Mua Hồ Sơ
+        </p>
+        <h2 id="modal-design-name" style="
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 22px;
+          font-weight: 700;
+          color: var(--c-text);
+          margin: 0 0 8px;
+          line-height: 1.3;
+          padding-right: 32px;
+        "></h2>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 14px; color: var(--c-muted);">Giá hồ sơ:</span>
+          <span id="modal-price" class="price" style="font-size: 22px;"></span>
+        </div>
+      </div>
+
+      <!-- What's included -->
+      <div style="
+        background: var(--c-surface);
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 24px;
+      ">
+        <p style="font-size: 12px; font-weight: 600; color: var(--c-muted); text-transform: uppercase; letter-spacing: 1px; margin: 0 0 12px;">
+          Bộ hồ sơ bao gồm
+        </p>
+        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
+          <li style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-text);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Bản vẽ kiến trúc đầy đủ (PDF)
+          </li>
+          <li style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-text);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Bản vẽ kết cấu + mặt cắt
+          </li>
+          <li style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-text);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Phối cảnh 3D nội & ngoại thất
+          </li>
+          <li style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-text);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Bảng dự toán vật liệu chi tiết
+          </li>
+          <li style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-text);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Hỗ trợ chỉnh sửa nhỏ miễn phí
+          </li>
+        </ul>
+      </div>
+
+      <!-- Form -->
+      <form id="payment-form" style="display: flex; flex-direction: column; gap: 14px;">
+        <div>
+          <label for="buyer-name" class="field-label">Họ và tên *</label>
+          <input
+            type="text"
+            id="buyer-name"
+            class="field-input"
+            placeholder="Nguyễn Văn A"
+            required
+            autocomplete="name"
+          />
+        </div>
+        <div>
+          <label for="buyer-email" class="field-label">Email nhận hồ sơ *</label>
+          <input
+            type="email"
+            id="buyer-email"
+            class="field-input"
+            placeholder="email@example.com"
+            required
+            autocomplete="email"
+          />
+        </div>
+
+        <div id="form-error" style="
+          display: none;
+          background: #FEF2F2;
+          border: 1px solid #FECACA;
+          border-radius: 8px;
+          padding: 10px 14px;
+          font-size: 13px;
+          color: #B91C1C;
+        "></div>
+
+        <button
+          type="submit"
+          id="submit-payment"
+          class="btn-primary"
+          style="width: 100%; justify-content: center;"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+          </svg>
+          Tiến Hành Thanh Toán
+        </button>
+      </form>
+
+      <p style="text-align: center; font-size: 11px; color: var(--c-muted); margin: 12px 0 0;">
+        Thanh toán an toàn qua PayOS • Nhận hồ sơ ngay sau khi thanh toán
+      </p>
+    </div>
+
+    <!-- Step 2: QR code -->
+    <div id="step-qr" style="display: none;">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <div style="
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background: #FBF3DC;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 12px;
+        ">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+          </svg>
+        </div>
+        <h2 style="
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 20px;
+          font-weight: 700;
+          margin: 0 0 6px;
+        ">Quét Mã Để Thanh Toán</h2>
+        <p style="font-size: 13px; color: var(--c-muted); margin: 0;">
+          Mở app ngân hàng, chọn "Quét QR" và quét mã bên dưới
+        </p>
+      </div>
+
+      <!-- QR Code image -->
+      <div style="
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+      ">
+        <div style="
+          padding: 16px;
+          background: white;
+          border-radius: 12px;
+          box-shadow: var(--shadow-card);
+          display: inline-block;
+        ">
+          <img
+            id="qr-image"
+            src=""
+            alt="VietQR Code"
+            width="200"
+            height="200"
+            style="display: block; border-radius: 4px;"
+          />
+        </div>
+      </div>
+
+      <!-- Amount display -->
+      <div style="
+        background: var(--c-surface);
+        border-radius: 10px;
+        padding: 14px;
+        text-align: center;
+        margin-bottom: 20px;
+      ">
+        <div style="font-size: 12px; color: var(--c-muted); margin-bottom: 4px;">Số tiền cần thanh toán</div>
+        <div id="qr-amount" class="price" style="font-size: 24px;"></div>
+      </div>
+
+      <!-- Fallback link -->
+      <div style="text-align: center; margin-bottom: 20px;">
+        <p style="font-size: 12px; color: var(--c-muted); margin-bottom: 8px;">Không quét được QR?</p>
+        <a
+          id="checkout-link"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-secondary"
+          style="font-size: 13px; padding: 9px 20px;"
+        >
+          Thanh Toán Online Tại Đây
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+
+      <div style="
+        background: #EFF6FF;
+        border: 1px solid #BFDBFE;
+        border-radius: 8px;
+        padding: 12px 14px;
+        font-size: 13px;
+        color: #1E40AF;
+        line-height: 1.5;
+      ">
+        Sau khi thanh toán thành công, hồ sơ thiết kế sẽ được gửi tự động đến email của bạn trong vòng vài phút.
+      </div>
+    </div>
+
+    <!-- Step 3: Success -->
+    <div id="step-success" style="display: none; text-align: center; padding: 20px 0;">
+      <div style="
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: #F0FDF4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+      ">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <h2 style="
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 26px;
+        font-weight: 700;
+        margin: 0 0 12px;
+      ">Cảm Ơn Bạn!</h2>
+      <p style="font-size: 15px; color: var(--c-muted); margin: 0 0 8px; line-height: 1.6;">
+        Thanh toán đã được xác nhận thành công.
+      </p>
+      <p style="font-size: 14px; color: var(--c-muted); margin: 0 0 32px; line-height: 1.6;">
+        Kiểm tra hộp thư email của bạn để nhận hồ sơ thiết kế. (Kiểm tra cả thư mục Spam nếu không thấy.)
+      </p>
+      <button
+        id="success-close"
+        class="btn-primary"
+        style="width: 100%; justify-content: center;"
+      >
+        Đóng
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById('payment-modal')!;
+  const closeBtn = document.getElementById('modal-close')!;
+  const successCloseBtn = document.getElementById('success-close')!;
+  const form = document.getElementById('payment-form') as HTMLFormElement;
+  const stepForm = document.getElementById('step-form')!;
+  const stepQR = document.getElementById('step-qr')!;
+  const stepSuccess = document.getElementById('step-success')!;
+  const formError = document.getElementById('form-error')!;
+  const submitBtn = document.getElementById('submit-payment') as HTMLButtonElement;
+
+  let currentMaMau = '';
+  let pollInterval: ReturnType<typeof setInterval> | null = null;
+
+  function openModal(maMau: string, designName: string, price: number) {
+    currentMaMau = maMau;
+
+    // Reset to form step
+    stepForm.style.display = '';
+    stepQR.style.display = 'none';
+    stepSuccess.style.display = 'none';
+
+    // Set design info
+    const nameEl = document.getElementById('modal-design-name')!;
+    const priceEl = document.getElementById('modal-price')!;
+    nameEl.textContent = designName;
+    priceEl.textContent = new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      maximumFractionDigits: 0,
+    }).format(price);
+
+    // Show modal
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (pollInterval) {
+      clearInterval(pollInterval);
+      pollInterval = null;
+    }
+  }
+
+  // Expose globally
+  (window as unknown as Record<string, unknown>).openPaymentModal = openModal;
+
+  closeBtn.addEventListener('click', closeModal);
+  successCloseBtn.addEventListener('click', closeModal);
+
+  // Close on overlay click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name = (document.getElementById('buyer-name') as HTMLInputElement).value.trim();
+    const email = (document.getElementById('buyer-email') as HTMLInputElement).value.trim();
+
+    if (!name || !email) {
+      showError('Vui lòng điền đầy đủ thông tin.');
+      return;
+    }
+
+    if (!email.includes('@')) {
+      showError('Email không hợp lệ.');
+      return;
+    }
+
+    formError.style.display = 'none';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Đang xử lý...';
+
+    try {
+      const res = await fetch('/api/payment/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ma_mau: currentMaMau,
+          email,
+          name,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json() as { error?: string };
+        throw new Error(err.error ?? `HTTP ${res.status}`);
+      }
+
+      const data = await res.json() as {
+        checkoutUrl: string;
+        qrCode: string;
+        orderCode: number;
+        amount: number;
+      };
+
+      // Show QR step
+      stepForm.style.display = 'none';
+      stepQR.style.display = '';
+
+      const qrImg = document.getElementById('qr-image') as HTMLImageElement;
+      qrImg.src = data.qrCode;
+
+      const qrAmount = document.getElementById('qr-amount')!;
+      qrAmount.textContent = new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND',
+        maximumFractionDigits: 0,
+      }).format(data.amount);
+
+      const checkoutLink = document.getElementById('checkout-link') as HTMLAnchorElement;
+      checkoutLink.href = data.checkoutUrl;
+
+    } catch (err: unknown) {
+      showError((err as Error).message ?? 'Có lỗi xảy ra, vui lòng thử lại.');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+        </svg>
+        Tiến Hành Thanh Toán
+      `;
+    }
+  });
+
+  function showError(message: string) {
+    formError.textContent = message;
+    formError.style.display = 'block';
+  }
+</script>
